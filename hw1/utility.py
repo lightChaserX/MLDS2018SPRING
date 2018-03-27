@@ -4,12 +4,15 @@ from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.data as UtiData
+import torchvision.datasets as dsets
+import torchvision.transforms as transforms
 import torch.optim as optim
 import numpy as np
 
 """
-TODO: Define model0
+TODO: Define DNN model
 """
+# DNN model0
 class Net0(nn.Module):
 
     def __init__(self):
@@ -34,9 +37,7 @@ class Net0(nn.Module):
         pred_y = self.fc8(out7)
         return pred_y
 
-"""
-TODO: Define model1
-"""
+# DNN model1
 class Net1(nn.Module):
 
     def __init__(self):
@@ -55,9 +56,7 @@ class Net1(nn.Module):
         pred_y = self.fc5(out4)
         return pred_y
     
-"""
-TODO: Define model2
-"""
+# DNN model2
 class Net2(nn.Module):
 
     def __init__(self):
@@ -71,7 +70,46 @@ class Net2(nn.Module):
         return pred_y
 
 """
-TODO: Generate the data
+TODO: CNN Model
+"""
+# CNN model0
+class CNN_Net0(nn.Module):
+    def __init__(self):
+        super(CNN_Net0, self).__init__()
+        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
+        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+        self.conv2_drop = nn.Dropout2d()
+        self.fc1 = nn.Linear(320, 50)
+        self.fc2 = nn.Linear(50, 10)
+    
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        x = x.view(-1, 320)
+        x = F.relu(self.fc1(x))
+        x = F.dropout(x, training=self.training)
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1)
+
+# CNN model1
+class CNN_Net1(nn.Module):
+    def __init__(self):
+        super(CNN_Net1, self).__init__()
+        self.conv1 = nn.Conv2d(1, 3, kernel_size=5)
+        self.conv1_drop = nn.Dropout2d()
+        self.fc1 = nn.Linear(432, 50)
+        self.fc2 = nn.Linear(50, 10)
+    
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv1_drop(self.conv1(x)), 2))
+        x = x.view(-1, 432)
+        x = F.relu(self.fc1(x))
+        x = F.dropout(x, training=self.training)
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1)
+
+"""
+TODO: Generate the function data
 """
 def f0(x):
     return 4*x ** (5) - x ** (2) + 2*x ** (1/2) - 1
@@ -88,96 +126,24 @@ def make_feature(num_data, f):
     y_data = f(x_data)
     return UtiData.TensorDataset(data_tensor=torch.from_numpy(x_data).unsqueeze(1), 
                                  target_tensor=torch.from_numpy(y_data).unsqueeze(1))
+    
+"""
+TODO: Generate the MNIST data
+"""
+def fetch_mnist_data(dir):
+    train_dataset = dsets.MNIST(root=dir, 
+                            train=True, 
+                            transform=transforms.ToTensor(),  
+                            download=True)
+
+    test_dataset = dsets.MNIST(root=dir, 
+                           train=False, 
+                           transform=transforms.ToTensor())
+    return train_dataset, test_dataset
 
 """
-TODO: Plot arrow
 """
-def arrowplot(axes, x, y, narrs=30, dspace=0.5, direc='pos', \
-                          hl=0.3, hw=6, c='black'): 
-    ''' narrs  :  Number of arrows that will be drawn along the curve
-
-        dspace :  Shift the position of the arrows along the curve.
-                  Should be between 0. and 1.
-
-        direc  :  can be 'pos' or 'neg' to select direction of the arrows
-
-        hl     :  length of the arrow head 
-
-        hw     :  width of the arrow head        
-
-        c      :  color of the edge and face of the arrow head  
-    '''
-
-    # r is the distance spanned between pairs of points
-    r = [0]
-    for i in range(1,len(x)):
-        dx = x[i]-x[i-1] 
-        dy = y[i]-y[i-1] 
-        r.append(np.sqrt(dx*dx+dy*dy))
-    r = np.array(r)
-
-    # rtot is a cumulative sum of r, it's used to save time
-    rtot = []
-    for i in range(len(r)):
-        rtot.append(r[0:i].sum())
-    rtot.append(r.sum())
-
-    # based on narrs set the arrow spacing
-    aspace = r.sum() / narrs
-
-    if direc is 'neg':
-        dspace = -1.*abs(dspace) 
-    else:
-        dspace = abs(dspace)
-
-    arrowData = [] # will hold tuples of x,y,theta for each arrow
-    arrowPos = aspace*(dspace) # current point on walk along data
-                                 # could set arrowPos to 0 if you want
-                                 # an arrow at the beginning of the curve
-
-    ndrawn = 0
-    rcount = 1 
-    while arrowPos < r.sum() and ndrawn < narrs:
-        x1,x2 = x[rcount-1],x[rcount]
-        y1,y2 = y[rcount-1],y[rcount]
-        da = arrowPos-rtot[rcount]
-        theta = np.arctan2((x2-x1),(y2-y1))
-        ax = np.sin(theta)*da+x1
-        ay = np.cos(theta)*da+y1
-        arrowData.append((ax,ay,theta))
-        ndrawn += 1
-        arrowPos+=aspace
-        while arrowPos > rtot[rcount+1]: 
-            rcount+=1
-            if arrowPos > rtot[-1]:
-                break
-
-    # could be done in above block if you want
-    for ax,ay,theta in arrowData:
-        # use aspace as a guide for size and length of things
-        # scaling factors were chosen by experimenting a bit
-
-        dx0 = np.sin(theta)*hl/2. + ax
-        dy0 = np.cos(theta)*hl/2. + ay
-        dx1 = -1.*np.sin(theta)*hl/2. + ax
-        dy1 = -1.*np.cos(theta)*hl/2. + ay
-
-        if direc is 'neg' :
-          ax0 = dx0 
-          ay0 = dy0
-          ax1 = dx1
-          ay1 = dy1 
-        else:
-          ax0 = dx1 
-          ay0 = dy1
-          ax1 = dx0
-          ay1 = dy0 
-
-        axes.annotate('', xy=(ax0, ay0), xycoords='data',
-                xytext=(ax1, ay1), textcoords='data',
-                arrowprops=dict( headwidth=hw, frac=1., ec=c, fc=c))
-
-
-    axes.plot(x,y, color = c)
-    #axes.set_xlim(x.min()*1.1,x.max()*1.1)
-    #axes.set_ylim(y.min()*1.1,y.max()*1.1)
+def model_params(net):
+    model_parameters = filter(lambda p: p.requires_grad, net.parameters())
+    num_params = sum([np.prod(p.size()) for p in model_parameters])
+    return num_params
