@@ -111,7 +111,7 @@ class CNN_Net1(nn.Module):
 # CNN model2
 class CNN_Net2(nn.Module):
     def __init__(self):
-        super(Net2, self).__init__()
+        super(CNN_Net2, self).__init__()
         self.conv1 = nn.Conv2d(1, 2, kernel_size=5)
         self.conv1_drop = nn.Dropout2d()
         self.fc1 = nn.Linear(288, 30)
@@ -128,7 +128,7 @@ class CNN_Net2(nn.Module):
 # CNN model3
 class CNN_Net3(nn.Module):
     def __init__(self):
-        super(Net3, self).__init__()
+        super(CNN_Net3, self).__init__()
         self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 5, kernel_size=3)
         self.conv2_drop = nn.Dropout2d()
@@ -147,7 +147,7 @@ class CNN_Net3(nn.Module):
 # CNN model4
 class CNN_Net4(nn.Module):
     def __init__(self):
-        super(Net4, self).__init__()
+        super(CNN_Net4, self).__init__()
         self.conv1 = nn.Conv2d(1, 20, kernel_size=5)
         self.conv2 = nn.Conv2d(20, 15, kernel_size=3)
         self.conv3 = nn.Conv2d(15, 10, kernel_size=2)
