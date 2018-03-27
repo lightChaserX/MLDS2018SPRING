@@ -24,6 +24,8 @@ if __name__ == '__main__':
                     help='function no. for training (default: 0)')
     parser.add_argument('--num-model', type=int, default=0, metavar='NM',
                     help='model no. for training (default: 0)')
+    parser.add_argument('--times', type=int, default=0, metavar='T',
+                    help='training times (default: 0)')
     args = parser.parse_args()
     
     num_data       =       args.num_data 
@@ -34,8 +36,8 @@ if __name__ == '__main__':
     num_func       =       args.num_func
     num_model      =       args.num_model
     
-    print('num_data=%d, MAX_Iter=%d, BATCH_SIZE=%d, train_lr=%f, train_momentum=%f, num_func=%d, num_model=%d'
-        % (num_data,    MAX_Iter,    BATCH_SIZE,    train_lr,    train_momentum,    num_func,    num_model))
+    print('num_data=%d,MAX_Iter=%d,BATCH_SIZE=%d,train_lr=%f,train_momentum=%f,num_func=%d,num_model=%d,times=%d'
+        % (num_data,   MAX_Iter,   BATCH_SIZE,   train_lr,   train_momentum,   num_func,   num_model,   args.times))
     
     exec('f = f%s' % num_func)
     exec('net = Net%s().cuda().double()' % num_model)
@@ -43,12 +45,14 @@ if __name__ == '__main__':
     folder_name = 'Results1-2-1'
     if not os.path.exists(folder_name):
         os.makedirs(folder_name) 
-    data_save_name =   'func' + str(num_func) + '_model' + str(num_model) + '_data.dat'
-    loss_save_name =   'func' + str(num_func) + '_model' + str(num_model) + '_loss.dat'
-    weight_save_name = 'func' + str(num_func) + '_model' + str(num_model) + '_weight.dat'
+    data_save_name   = 'func' + str(num_func) + '_model' + str(num_model) + '_data'   + str(args.times) + '.dat'
+    loss_save_name   = 'func' + str(num_func) + '_model' + str(num_model) + '_loss'   + str(args.times) + '.dat'
+    weight_save_name = 'func' + str(num_func) + '_model' + str(num_model) + '_weight' + str(args.times) + '.dat'
+    bias_save_name   = 'func' + str(num_func) + '_model' + str(num_model) + '_bias'   + str(args.times) + '.dat'
     data_save_file_name   = os.path.join(folder_name, data_save_name)
     loss_save_file_name   = os.path.join(folder_name, loss_save_name)
     weight_save_file_name = os.path.join(folder_name, weight_save_name)
+    bias_save_file_name   = os.path.join(folder_name, bias_save_name)
     
     loader = UtiData.DataLoader(dataset=make_feature(num_data, f), 
                                 batch_size=BATCH_SIZE, 
@@ -60,7 +64,8 @@ if __name__ == '__main__':
     
     ##################################################################################################
     loss_total = []
-    all_params = np.array([])
+    all_weight_params = np.array([])
+    all_bias_params   = np.array([])
     for iter in range(0,MAX_Iter):
         running_loss = 0.0
         optimizer.zero_grad()
@@ -81,16 +86,23 @@ if __name__ == '__main__':
         loss_total.append(running_loss/(num_data/BATCH_SIZE))
         print('Iteration %3d: loss %.10f' % (iter, running_loss/(num_data/BATCH_SIZE)))
         if not iter % (3*num_data//BATCH_SIZE):
-            epoch_params = np.array([])
+            weight_params = np.array([])
+            bias_params   = np.array([])
             for one_name, one_param in net.named_parameters():
                 if 'weight' in one_name:
-                    epoch_params = np.append(epoch_params, one_param.cpu().data.numpy())
-            if not all_params.size:
-                all_params = epoch_params
+                    weight_params = np.append(weight_params, one_param.cpu().data.numpy())
+                if 'bias' in one_name:
+                    bias_params = np.append(bias_params, one_param.cpu().data.numpy())
+            if not all_weight_params.size or not all_bias_params.size:
+                all_weight_params = weight_params
+                all_bias_params   = bias_params
             else:
-                all_params = np.vstack((all_params, epoch_params))
-            weight_df = pd.DataFrame(np.transpose(all_params))
+                all_weight_params = np.vstack((all_weight_params, weight_params))
+                all_bias_params   = np.vstack((all_bias_params,   bias_params))
+            weight_df = pd.DataFrame(np.transpose(all_weight_params))
             weight_df.to_csv(weight_save_file_name, index=False)
+            bias_df = pd.DataFrame(np.transpose(all_bias_params))
+            bias_df.to_csv(bias_save_file_name, index=False)
 
     # Evaluate and plot results        
     x_eval = np.linspace(0,1,num_data) 
