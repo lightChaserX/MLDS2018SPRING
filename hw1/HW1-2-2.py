@@ -68,6 +68,7 @@ for epoch in range(num_epochs):
     running_correct = 0
     
     test_loss = 0.0
+    grad_total = 0.0
     for i, (images, labels) in enumerate(train_loader):  
         # Convert torch tensor to Variable
         #images = Variable(images.view(-1, 28*28))
@@ -84,22 +85,25 @@ for epoch in range(num_epochs):
         running_correct += torch.sum(pred == labels.data)/len(labels.data)
         running_loss += loss.data[0]
         
+        grad_all = 0.0
+        for p in net.parameters():
+            grad = 0.0
+            if p.grad is not None:
+                grad = (p.grad.cpu().data.numpy() ** 2).sum()
+            grad_all += grad
+        grad_total += grad_all ** 0.5
+        
         optimizer.step()
         
     cur_accu = running_correct/len(train_loader)
     cur_loss = running_loss/len(train_loader)
+    cur_grad = grad_total/len(train_loader)
     loss_total.append(cur_loss)
     accu_total.append(cur_accu)
+    grad_norm.append(cur_grad)
     
     # Display loss and save weights
     print ('Epoch [%d/%d], Accu:%.4f Loss: %.4f' % (epoch+1, num_epochs, cur_accu, cur_loss))
-    grad_all = 0.0
-    for p in net.parameters():
-        grad = 0.0
-        if p.grad is not None:
-            grad = (p.grad.cpu().data.numpy() ** 2).sum()
-        grad_all += grad
-    grad_norm.append(grad_all ** 0.5)
     
     grad_df = pd.DataFrame(grad_norm)
     grad_df.to_csv(grad_save_file_name, index=False)
