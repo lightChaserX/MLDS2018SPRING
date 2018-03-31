@@ -143,7 +143,8 @@ for epoch in range(num_epochs):
         
         optimizer.step()
     
-    train_accu = train_accu/len(train_loader)
+    tot = len(train_loader) * batch_size
+    train_accu = train_accu/tot*100
     train_loss = train_loss/len(train_loader)
     
     #total = 0
@@ -160,8 +161,8 @@ for epoch in range(num_epochs):
         # accuracy & loss
         test_accu += torch.sum(predicted == labels.data)
         test_loss += loss.data[0]
-    
-    test_accu = test_accu/len(test_loader)
+    tot = len(test_loader) * batch_size
+    test_accu = test_accu/tot*100
     test_loss = test_loss/len(test_loader)
     
     print ('Epoch [%5d/%5d], Accu:%.4f TrainLoss: %.4f TestLoss: %.4f' % (epoch+1, num_epochs, train_accu, train_loss, test_loss))
