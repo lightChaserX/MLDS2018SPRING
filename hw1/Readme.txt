@@ -11,6 +11,9 @@ python hw1_1_cifar10.py
 
 HW1-2
 A. Visualize the optimization process
+python hw1_2_1.py
+python pca.py
+python hw1_2_1.py
 B. Observe gradient norm during training
 python hw1_2_grad.py
 C. What happens when gradient is almost zero?
