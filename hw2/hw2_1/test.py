@@ -191,7 +191,7 @@ ix2word_series = pd.Series(np.load(os.path.join('./util_folder/', 'ix2word.npy')
 id_list = []
 test_sents = []
 model_name = 'modelhaha-651'
-saver.restore(sess, os.path.join('./saved_models',model_name))
+saver.restore(sess, os.path.join('./MLDS_hw2_1_model/model/',model_name))
 for idx, video_feature in enumerate(test_feature):
 	
 	video_feature = video_feature.reshape(1,num_of_video_lstm_steps, image_dim)
