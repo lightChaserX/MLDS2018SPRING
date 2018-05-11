@@ -387,9 +387,13 @@ def inference():
 
 
     # inference
+    init_g = tf.global_variables_initializer()
+    init_l = tf.local_variables_initializer()
     with tf.Session() as sess:
-        #sess.run(tf.initialize_all_variables())
+        #sess.run(tf.global_variables_initializer)
         #sess.run(tf.initialize_local_variables())
+        sess.run(init_g)
+        sess.run(init_g)
         model = Seq2SeqModelForChatBot(hidden_dim, num_of_layers, embedding_size, learning_rate, learning_rate_decay_factor, word2ix, mode='decode', beam_search=True, beam_size=5, max_gradient_norm=5.0)
         model_name = 'chatbot.ckpt-45300'
         model.saver.restore(sess, os.path.join(model_dir,model_name))
