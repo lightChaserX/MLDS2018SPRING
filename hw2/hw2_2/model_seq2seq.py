@@ -88,16 +88,16 @@ class Seq2SeqModelForChatBot():
                 encoder_inputs_length = tf.contrib.seq2seq.tile_batch(self.encoder_inputs_length, multiplier=self.beam_size)
 
             # attention
-            #attention_mechanism = tf.contrib.seq2seq.LuongAttention(num_units=self.hidden_dim, memory=encoder_outputs, memory_sequence_length=encoder_inputs_length)
+            attention_mechanism = tf.contrib.seq2seq.LuongAttention(num_units=self.hidden_dim, memory=encoder_outputs, memory_sequence_length=encoder_inputs_length)
             decoder_cell = self.create_rnn_cell()
             # attention
-            #decoder_cell = tf.contrib.seq2seq.AttentionWrapper(cell=decoder_cell, attention_mechanism=attention_mechanism,
-                                                               #attention_layer_size=self.hidden_dim, name='Attention_Wrapper')
+            decoder_cell = tf.contrib.seq2seq.AttentionWrapper(cell=decoder_cell, attention_mechanism=attention_mechanism,
+                                                               attention_layer_size=self.hidden_dim, name='Attention_Wrapper')
             
             batch_size = self.batch_size if not self.beam_search else self.batch_size * self.beam_size
-            decoder_initial_state = encoder_state
+            #decoder_initial_state = encoder_state
             # attention
-            #decoder_initial_state = decoder_cell.zero_state(batch_size=batch_size, dtype=tf.float32).clone(cell_state=encoder_state)
+            decoder_initial_state = decoder_cell.zero_state(batch_size=batch_size, dtype=tf.float32).clone(cell_state=encoder_state)
             
             output_layer = tf.layers.Dense(self.vocab_size, kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.1))
 
@@ -127,9 +127,9 @@ class Seq2SeqModelForChatBot():
 
                 # optimizer
                 #optimizer = tf.train.MomentumOptimizer(self.learning_rate, 0.9)
-                #optimizer = tf.train.AdamOptimizer()
+                optimizer = tf.train.AdamOptimizer()
                 #optimizer = tf.train.RMSPropOptimizer(self.learning_rate)
-                optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+                #optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
 
                 trainable_params = tf.trainable_variables()
                 gradients = tf.gradients(self.loss, trainable_params)
