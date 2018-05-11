@@ -388,7 +388,7 @@ def inference():
     # inference
     with tf.Session() as sess:
         model = Seq2SeqModelForChatBot(hidden_dim, num_of_layers, embedding_size, learning_rate, learning_rate_decay_factor, word2ix, mode='decode', beam_search=True, beam_size=5, max_gradient_norm=5.0)
-        model_name = 'model0-100'
+        model_name = 'chatbot.ckpt-45300'
         model.saver.restore(sess, os.path.join(model_dir,model_name))
 
 
@@ -403,6 +403,5 @@ def inference():
         for single_answer in answers_list:
             f.write(" ".join(single_answer)+'\n')
         
-
 
 inference()
