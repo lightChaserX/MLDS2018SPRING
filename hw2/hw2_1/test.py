@@ -35,7 +35,7 @@ test_id = pd.read_csv(TEST_ID_DIR, header=None, names=['id'])
 
 
 image_dim = 4096
-hidden_dim = 256
+hidden_dim = 512
 num_of_video_lstm_steps = 80
 num_of_caption_lstm_steps = 20
 num_of_frames = 80
@@ -224,7 +224,7 @@ submit = pd.DataFrame(np.array([id_list, test_sents]).T)
 submit.to_csv(OUTPUT_FILE, index=False, header=False)
 
 
-test_answer = json.load(open('./testing_label.json','r'))
+#test_answer = json.load(open('./testing_label.json','r'))
 result = {}
 with open(OUTPUT_FILE,'r') as f:
 	for line in f:
@@ -235,6 +235,7 @@ with open(OUTPUT_FILE,'r') as f:
 		result[test_id] = caption
 
 # bleu score
+'''
 bleu=[]
 for item in test_answer:
 	score_per_video = []
@@ -244,6 +245,7 @@ for item in test_answer:
 average = sum(bleu) / len(bleu)
 
 print("Average bleu score is " + str(average))
+'''
 
 
 '''
