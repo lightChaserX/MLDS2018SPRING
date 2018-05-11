@@ -190,7 +190,7 @@ ix2word_series = pd.Series(np.load(os.path.join('./util_folder/', 'ix2word.npy')
 
 id_list = []
 test_sents = []
-model_name = 'modelhaha-204'
+model_name = 'modelhaha-651'
 saver.restore(sess, os.path.join('./saved_models',model_name))
 for idx, video_feature in enumerate(test_feature):
 	
