@@ -18,7 +18,7 @@ learning_rate = 0.5
 learning_rate_decay_factor = 0.99
 batch_size = 100
 num_of_epochs = 50
-model_dir = './model/'
+model_dir = './MLDS_hw2_2_model/model/'
 steps_per_checkpoint = 100
 
 
