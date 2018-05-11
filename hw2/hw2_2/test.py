@@ -7,6 +7,7 @@ import pickle
 import random
 from tqdm import tqdm
 import math
+import sys
 
 
 # parameters
@@ -14,9 +15,9 @@ padToken, bosToken, eosToken, unkToken = 0, 1, 2, 3
 hidden_dim = 512
 num_of_layers = 2
 embedding_size = 128
-learning_rate = 0.5
+learning_rate = 0.0005
 learning_rate_decay_factor = 0.99
-batch_size = 100
+batch_size = 128
 num_of_epochs = 50
 model_dir = './MLDS_hw2_2_model/model/'
 steps_per_checkpoint = 100
@@ -92,7 +93,7 @@ class Seq2SeqModelForChatBot():
             decoder_cell = self.create_rnn_cell()
             # attention
             decoder_cell = tf.contrib.seq2seq.AttentionWrapper(cell=decoder_cell, attention_mechanism=attention_mechanism,
-                                                               #attention_layer_size=self.hidden_dim, name='Attention_Wrapper')
+                                                               attention_layer_size=self.hidden_dim, name='Attention_Wrapper')
             
             batch_size = self.batch_size if not self.beam_search else self.batch_size * self.beam_size
             #decoder_initial_state = encoder_state
@@ -161,7 +162,7 @@ class Seq2SeqModelForChatBot():
                     # decoder_outpus = (rnn_outputs, sample_id)
                     self.decoder_predict_decode = tf.expand_dims(decoder_outputs.sample_id, -1)
         
-        self.saver = tf.train.Saver(tf.global_variables(),max_to_keep=10)
+        self.saver = tf.train.import_meta_graph('./MLDS_hw2_2_model/model/chatbot.ckpt-45300.meta')
 
     def train(self, sess, batch):
         feed_dict = {self.encoder_inputs: batch.encoder_inputs,
@@ -387,6 +388,8 @@ def inference():
 
     # inference
     with tf.Session() as sess:
+        #sess.run(tf.initialize_all_variables())
+        #sess.run(tf.initialize_local_variables())
         model = Seq2SeqModelForChatBot(hidden_dim, num_of_layers, embedding_size, learning_rate, learning_rate_decay_factor, word2ix, mode='decode', beam_search=True, beam_size=5, max_gradient_norm=5.0)
         model_name = 'chatbot.ckpt-45300'
         model.saver.restore(sess, os.path.join(model_dir,model_name))
