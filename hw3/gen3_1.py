@@ -146,7 +146,7 @@ def main():
     noise = np.load('./noise_3_1.npy')
     generated_images = generator.predict(noise)
     image = combine_images(generated_images)
-    detect(image)
+    #detect(image)
     image.save("./samples/gen3_1.png")
 
 
