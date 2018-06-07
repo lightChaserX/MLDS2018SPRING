@@ -9,8 +9,6 @@ import scipy.stats as stats
 from scipy import misc
 import random
 import argparse
-from skimage.transform import resize
-from scipy import misc
 
 
 hair_color = ['orange hair', 'white hair', 'aqua hair', 'gray hair',
