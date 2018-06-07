@@ -305,4 +305,4 @@ if __name__ == '__main__':
         else:
             ff = np.concatenate((ff,ele))
 
-    misc.imsave('./samples/out1.png',ff)
+    misc.imsave('./samples/cgan.png',ff)

@@ -147,7 +147,7 @@ def main():
     generated_images = generator.predict(noise)
     image = combine_images(generated_images)
     #detect(image)
-    image.save("./samples/gen3_1.png")
+    image.save("./samples/gan.png")
 
 
 main()
