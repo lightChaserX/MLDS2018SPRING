@@ -1,9 +1,9 @@
 from agent_dir.agent import Agent
 from collections import deque
-import tensorflow as tf
-import matplotlib.pyplot as plt
-import random
 import numpy as np 
+import tensorflow as tf
+import random
+
 
 random.seed(87)
 

@@ -5,10 +5,10 @@ import tensorflow as tf
 import time
 
 
-STOP_ACTION = 1
-UP_ACTION = 2
-DOWN_ACTION = 3
-action_dict = {DOWN_ACTION: 0, UP_ACTION: 1, STOP_ACTION: 2}
+STOP = 1
+UP = 2
+DOWN = 3
+action_dict = {DOWN: 0, UP: 1, STOP: 2}
 
 
 def prepro(o,image_size=[80,80]):
@@ -41,17 +41,13 @@ class Agent_PG(Agent):
         self.env = env
         self.max_step = 10000
         self.learning_rate = 0.001
-        self.input_shape = [None, 6400] #the observation
+        self.input_shape = [None, 6400]
         self.hidden_dim = 200
         self.num_action = 6
         self.batch_size = 1
         self.batch_size_episodes = 1
         self.gamma = 0.99
 
-        self.model_dir = "model_pg"
-
-        self.value_scale = 1
-        self.entropy_scale = 1
         self.model = './MLDS_hw4_model/pg/model_pg_cnn-25300.ckpt'
 
         self._sess = tf.Session()
@@ -87,7 +83,7 @@ class Agent_PG(Agent):
                 self.saver.restore(self._sess, self.model)
                 print('loading trained model')
             else:
-                print("No trained moedel found")
+                print("Not found")
 
         ##################
         # YOUR CODE HERE #
@@ -154,26 +150,20 @@ class Agent_PG(Agent):
         ##################
         # YOUR CODE HERE #
         ##################
-        if (self.first_move):
-        
+        if (self.first_move):        
             self.last_observation = self.process_frame(observation)
-            action = self.env.action_space.sample() ##random sample action
+            action = self.env.action_space.sample()
             self.first_move = False
         else:
-
             self.observation = self.process_frame(observation)
-
-
             observation_delta = self.observation - self.last_observation
-            self. last_observation = self.observation
-                
-                    
+            self. last_observation = self.observation                    
             up_probability = self._sess.run(self.up_probability, feed_dict = {self.input:observation_delta.reshape([1, -1])})
 
             if np.random.uniform() < up_probability:
-                action = UP_ACTION
+                action = UP
             else:
-                action = DOWN_ACTION
+                action = DOWN
 
         return action
 

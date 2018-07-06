@@ -1,6 +1,0 @@
-model_checkpoint_path: "model_pg_cnn-25400.ckpt"
-all_model_checkpoint_paths: "model_pg_cnn-25000.ckpt"
-all_model_checkpoint_paths: "model_pg_cnn-25100.ckpt"
-all_model_checkpoint_paths: "model_pg_cnn-25200.ckpt"
-all_model_checkpoint_paths: "model_pg_cnn-25300.ckpt"
-all_model_checkpoint_paths: "model_pg_cnn-25400.ckpt"
