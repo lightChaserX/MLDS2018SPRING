@@ -52,7 +52,7 @@ class Agent_PG(Agent):
 
         self.value_scale = 1
         self.entropy_scale = 1
-        self.model = './model_pg/model_pg_cnn-25000.ckpt'
+        self.model = './MLDS_hw4_model/pg/model_pg_cnn-25300.ckpt'
 
         self._sess = tf.Session()
 

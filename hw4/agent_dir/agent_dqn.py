@@ -39,7 +39,7 @@ class Agent_DQN(Agent):
         self.num_action = 3
         self.minibatch = 32
         self.esp = 1
-        self.model_path = "./model/dqn/Breakout_ddqn.ckpt-0-0"
+        self.model_path = "./MLDS_hw4_model/dqn/Breakout_ddqn.ckpt-0-0"
         self.replay_memory = deque()
 
         
